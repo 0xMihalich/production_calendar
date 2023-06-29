@@ -1,6 +1,8 @@
 # production_calendar
 ## Материализованное представление производственного календаря для Clickhouse (SQL)
 
+[Скриншот](https://github.com/0xMihalich/production_calendar/blob/main/production_calendar.jpg?raw=true)
+
 Проверка даты на принадлежность к нерабочему дню, согласно официальным указам и распоряжениям
 
 Основано на данных из API isDayOff() https://www.isdayoff.ru/
