@@ -1,7 +1,7 @@
 # production_calendar
 ## Материализованное представление производственного календаря для Clickhouse (SQL)
 
-[Скриншот](https://github.com/0xMihalich/production_calendar/blob/main/production_calendar.jpg?raw=true)
+<img src="https://github.com/0xMihalich/production_calendar/blob/main/production_calendar.jpg" width="500">
 
 Проверка даты на принадлежность к нерабочему дню, согласно официальным указам и распоряжениям
 
