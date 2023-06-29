@@ -1,5 +1,5 @@
-# production_calendar
-## Материализованное представление производственного календаря для Clickhouse (SQL)
+# Production Calendar
+### Материализованное представление производственного календаря для Clickhouse (SQL)
 
 <img src="https://github.com/0xMihalich/production_calendar/blob/main/production_calendar.jpg" width="1024">
 
