@@ -1,0 +1,71 @@
+-- TABLE.production_calendar_current_month source
+CREATE VIEW TABLE.production_calendar_current_month
+(
+    `start_month`    Date            COMMENT 'Начало месяца',
+    `month_day`      Date            COMMENT 'День месяца',
+    `week_number`    Int32           COMMENT 'Номер дня недели',
+    `week_name`      FixedString(22) COMMENT 'День недели',
+    `week_short`     FixedString(4)  COMMENT 'Сокращение дня недели',
+    `status_number`  Int32           COMMENT 'Статус дня (рабочий/нерабочий/сокращенный)',
+    `status_decode`  FixedString(46) COMMENT 'Расшифровка статуса',
+    `quarter_number` Int32           COMMENT 'Номер квартала',
+    `year_week`      Int32           COMMENT 'Номер недели в году'
+) AS
+SELECT
+    start_month,
+    month_day,
+    week_number,
+    weekdays[1] AS week_name,
+    weekdays[2] AS week_short,
+    status_number,
+    status_decode,
+    quarter_number,
+    year_week
+FROM
+(
+    SELECT
+        toStartOfMonth(now()) AS start_month,
+        groupArray(*) AS mark,
+        arrayJoin(arrayEnumerate(mark)) AS d,
+        start_month + toIntervalDay(d - 1) AS month_day,
+        toDayOfWeek(month_day) AS week_number,
+        multiIf(week_number = 1,
+                    ['Понедельник', 'ПН'],
+                week_number = 2,
+                    ['Вторник', 'ВТ'],
+                week_number = 3,
+                    ['Среда', 'СР'],
+                week_number = 4,
+                    ['Четверг', 'ЧТ'],
+                week_number = 5,
+                    ['Пятница', 'ПТ'],
+                week_number = 6,
+                    ['Суббота', 'СБ'],
+                week_number = 7,
+                    ['Воскресение', 'ВС'],
+                [NULL]) AS weekdays,
+        mark[d] AS status_number,
+        multiIf(status_number = 0,
+                    'Рабочий день',
+                status_number = 1,
+                    'Нерабочий день',
+                status_number = 2,
+                    'Сокращённый рабочий день',
+                status_number = 4,
+                    'Рабочий день',
+                status_number = 100,
+                    'Ошибка в дате',
+                status_number = 101,
+                    'Данные не найдены',
+                status_number = 199,
+                    'Ошибка сервиса',
+                NULL) AS status_decode,
+        toQuarter(month_day) AS quarter_number,
+        toWeek(month_day) AS year_week
+    FROM url(concat('https://isdayoff.ru/api/getdata?year=',
+                    formatDateTime(now(), '%Y'),
+                    '&month=',
+                    formatDateTime(now(), '%m'),
+                    '&cc=ru&pre=1&delimeter=%0A&covid=1&sd=0'),
+                    'CSV')
+);
